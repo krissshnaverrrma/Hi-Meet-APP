@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card">
+        <div class="brand-logo"><i class="fas fa-user-plus"></i>Join our Community..!</div>
+        <div class="brand-subtitle">Create your account</div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}<div class="alert">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="input-group"><i class="fas fa-id-card"></i><input type="text" name="name" class="glass-input"
+                    placeholder="Full Name" required></div>
+            <div class="input-group"><i class="fas fa-user"></i><input type="text" name="username" class="glass-input"
+                    placeholder="Username" required autocomplete="off"></div>
+            <div class="input-group"><i class="fas fa-envelope"></i><input type="email" name="email" class="glass-input"
+                    placeholder="Email Address" required></div>
+            <div class="input-group"><i class="fas fa-lock"></i><input type="password" name="password"
+                    class="glass-input" placeholder="Password" required></div>
+
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <a href="{{ url_for('main.login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Login
+                    instead</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

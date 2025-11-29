@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hi-Meet-APP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+</head>
+
+<body>
+
+    <audio id="msgSound"
+        src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=pop-39222.mp3"
+        preload="auto"></audio>
+
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="app-container">
+
+        <div id="drop-overlay" class="drop-overlay hidden">
+            <div class="drop-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Drop file to send</h3>
+            </div>
+        </div>
+
+        <div class="sidebar">
+
+            <div class="sidebar-search">
+                <input type="text" id="contactSearch" placeholder="Search Contacts..." class="glass-input search-sm">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <div class="contacts-header">
+                <h3>Contacts</h3>
+            </div>
+
+            <div class="contacts">
+                {% for u in users %}
+                <div class="contact" id="contact-{{ u.username }}"
+                    onclick="startPrivateChat('{{ u.username }}', '{{ u.name }}', this)">
+                    <div class="avatar-wrapper">
+                        {% if u.avatar == 'default.png' %}
+                        <div class="avatar"><i class="fas fa-user"></i></div>
+                        {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' + u.avatar) }}" class="avatar-img">
+                        {% endif %}
+                        <span
+                            class="status-dot {% if u.username in online_users %} {% else %} hidden {% endif %}"></span>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-name">{{ u.name }}</div>
+                        <div class="contact-status">{% if u.username in online_users %}Online{% else %}Offline{% endif
+                            %}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="header-container">
+                <div class="user-pill">
+                    <a href="{{ url_for('main.profile') }}" class="pill-user" title="View Profile">
+                        {% if user.avatar == 'default.png' %}
+                        <div class="pill-avatar-placeholder"><i class="fas fa-user"></i></div>
+                        {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" class="pill-avatar-img">
+                        {% endif %}
+                        <span class="pill-username">{{ user.username }}</span>
+                    </a>
+                    <div class="pill-divider"></div>
+                    <a href="{{ url_for('main.logout') }}" class="pill-logout" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-info">
+                    <button id="backBtn" class="back-btn hidden" onclick="showSidebar()"><i
+                            class="fas fa-arrow-left"></i></button>
+
+                    <img id="header-avatar" src="" class="header-avatar hidden" alt="User">
+
+                    <div class="header-details">
+                        <span id="header-room-name">Select a Contact</span>
+                        <span id="header-status" class="header-status"></span>
+                    </div>
+                </div>
+
+                <div class="chat-actions hidden" id="chat-actions">
+                    <button onclick="startVoiceCall()" title="Voice Call"><i class="fas fa-phone"></i></button>
+                    <button onclick="startVideoCall()" title="Video Call"><i class="fas fa-video"></i></button>
+
+                    <div class="menu-container">
+                        <button onclick="toggleChatMenu()" id="menuBtn"><i class="fas fa-ellipsis-v"></i></button>
+                        <div id="chat-menu" class="glass-dropdown hidden">
+                            <a href="#" onclick="clearChatHistory()"><i class="fas fa-trash"></i> Clear Chat</a>
+                            <a href="#" onclick="showContactInfo()"><i class="fas fa-info-circle"></i> View Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages" id="messages"></div>
+
+            <div id="typing-indicator" class="typing-indicator hidden">
+                <span>Someone is typing...</span>
+                <div class="typing-dots"><span></span><span></span><span></span></div>
+            </div>
+
+            <div class="emoji-popover hidden" id="emoji-popover">
+                <div id="emoji-picker-container"></div>
+            </div>
+
+            <div class="input-area hidden" id="input-area">
+                <button id="emojiBtn"><i class="far fa-smile"></i></button>
+
+                <button id="fileBtn" onclick="document.getElementById('fileInput').click()" title="Attach File">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="fileInput" style="display: none;">
+
+                <button id="cameraBtn" onclick="document.getElementById('imageInput').click()" title="Send Photo">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+
+                <button id="ttsBtn" onclick="sendTTSMessage()" title="Read Aloud">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+
+                <input type="text" id="msgInput" placeholder="Type a message..." autocomplete="off">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="video-modal" class="video-modal hidden">
+        <div class="video-content">
+            <div class="video-header">
+                <span>Video Call</span>
+                <button onclick="closeModal()" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="video-grid">
+                <div class="video-wrapper"><video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-label">You</div>
+                </div>
+                <div class="video-wrapper">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div id="subtitle-overlay" class="subtitle-overlay hidden"></div>
+                    <div class="video-label">Remote</div>
+                </div>
+            </div>
+            <div class="video-controls">
+                <button onclick="toggleCaptions()" id="captionBtn" class="control-btn" title="Toggle Live Captions"><i
+                        class="fas fa-closed-captioning"></i></button>
+                <button onclick="toggleMute()" class="control-btn"><i class="fas fa-microphone-slash"></i></button>
+                <button onclick="startCall()" id="startBtn" class="call-btn"><i class="fas fa-phone"></i> Start</button>
+                <button onclick="closeModal()" class="end-btn"><i class="fas fa-phone-slash"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="lightbox" class="lightbox" onclick="this.classList.remove('active')">
+        <img id="lightbox-img" src="" alt="Full View">
+    </div>
+
+    <input type="hidden" id="username" value="{{ user.username }}">
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
+</body>
+
+</html>

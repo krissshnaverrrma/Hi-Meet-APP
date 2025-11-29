@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card">
+        <div class="brand-logo"><i class="fas fa-comments"></i>Hi-Meet-APP</div>
+        <div class="brand-subtitle">Secure Login</div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}<div class="alert">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" class="glass-input" placeholder="Username" required
+                    autocomplete="off">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" class="glass-input" placeholder="Password" required>
+            </div>
+
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Login</button>
+                <a href="{{ url_for('main.forgot_password') }}" class="btn-secondary"><i class="fas fa-key"></i> Forgot
+                    Password?</a>
+                <a href="{{ url_for('main.register') }}" class="btn-secondary"><i class="fas fa-user-plus"></i> Create
+                    Account</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

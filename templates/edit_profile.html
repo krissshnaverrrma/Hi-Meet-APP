@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card">
+        <div class="brand-logo"><i class="fas fa-user-edit"></i> Edit Profile</div>
+
+        <div class="profile-preview" style="text-align: center; margin-bottom: 20px;">
+            {% if user.avatar == 'default.png' %}
+            <div class="avatar-large" style="margin: 0 auto;"><i class="fas fa-user"></i></div>
+            {% else %}
+            <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" class="avatar-img-large">
+            {% endif %}
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="avatar-actions">
+                <label for="avatar-upload" class="btn-secondary btn-sm"><i class="fas fa-camera"></i> Change
+                    Image</label>
+                <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;"
+                    onchange="this.form.submit()">
+                {% if user.avatar != 'default.png' %}
+                <button type="submit" name="remove_avatar" value="true" class="btn-danger btn-sm"><i
+                        class="fas fa-trash"></i> Remove</button>
+                {% endif %}
+            </div>
+
+            <div class="input-group"><i class="fas fa-id-card"></i><input type="text" name="name" class="glass-input"
+                    value="{{ user.name }}" placeholder="Display Name" required></div>
+            <div class="input-group"><i class="fas fa-quote-left"></i><textarea name="bio" class="glass-input" rows="3"
+                    placeholder="Update your bio...">{{ user.bio }}</textarea></div>
+
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <a href="{{ url_for('main.profile') }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+            <p style="font-size: 0.8rem; color: red margin-bottom: 10px; text-align: center;">Danger Zone</p>
+            <a href="{{ url_for('main.delete_account') }}" onclick="return confirm('Are you sure? This is permanent.')"
+                class="btn-danger"><i class="fas fa-trash-alt"></i> Delete Account</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

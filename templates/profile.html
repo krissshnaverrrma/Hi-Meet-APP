@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card profile-card">
+        <div class="profile-avatar-container">
+            {% if user.avatar == 'default.png' %}
+            <div class="avatar-large"><i class="fas fa-user"></i></div>
+            {% else %}
+            <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" class="avatar-img-large">
+            {% endif %}
+        </div>
+
+        <h2 class="profile-name">{{ user.name }}</h2>
+        <p class="profile-username">@{{ user.username }}</p>
+
+        <div class="profile-bio-box">{{ user.bio }}</div>
+
+        <div class="auth-actions">
+            <a href="{{ url_for('main.edit_profile') }}" class="btn-primary"><i class="fas fa-pen"></i> Edit Profile</a>
+            <a href="{{ url_for('main.chat') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Back to
+                Chat</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
