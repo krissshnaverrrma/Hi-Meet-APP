@@ -10,7 +10,6 @@ from app import create_app, socketio
 
 app = create_app()
 
-
 socketio_app = app
 
 if __name__ == '__main__':
