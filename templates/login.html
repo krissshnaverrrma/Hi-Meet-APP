@@ -1,53 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% block title %}Login{% endblock %}
 
-<body>
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card">
+        <div class="brand-logo"><i class="fas fa-comments"></i>Hi-Meeting-APP</div>
+        <div class="brand-subtitle">Secure Login</div>
 
-    <div class="auth-wrapper">
-        <div class="glass-card">
-            <div class="brand-logo"><i class="fas fa-comments"></i>Hi-Meeting-APP</div>
-            <div class="brand-subtitle">Secure Login</div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div class="alert">{{ messages[0] }}</div>
-            {% endif %}
-            {% endwith %}
+        <form method="POST">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" class="glass-input" placeholder="Username or Email" required
+                    autocomplete="off">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" class="glass-input" placeholder="Password" required>
+            </div>
 
-            <form method="POST">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" name="username" class="glass-input" placeholder="Username or Email" required
-                        autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" name="password" class="glass-input" placeholder="Password" required>
-                </div>
+            <div class="auth-actions">
+                <button type="submit" class="btn-primary">Login</button>
 
-                <div class="auth-actions">
-                    <button type="submit" class="btn-primary">Login</button>
+                <a href="{{ url_for('main.forgot_password') }}" class="btn-secondary">
+                    <i class="fas fa-key"></i> Forgot Password?
+                </a>
 
-                    <a href="{{ url_for('main.forgot_password') }}" class="btn-secondary">
-                        <i class="fas fa-key"></i> Forgot Password?
-                    </a>
+                <a href="{{ url_for('main.register') }}" class="btn-secondary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </a>
+            </div>
+        </form>
 
-                    <a href="{{ url_for('main.register') }}" class="btn-secondary">
-                        <i class="fas fa-user-plus"></i> Create Account
-                    </a>
-                </div>
-            </form>
-
-        </div>
     </div>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

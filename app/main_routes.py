@@ -39,15 +39,28 @@ def index():
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
+        identifier = request.form.get('username')
         password = request.form.get('password')
+
         user = User.query.filter(
             (User.username == identifier) | (User.email == identifier)
         ).first()
+
+        print(f"--- LOGIN DEBUG ---")
+        print(f"Identifier submitted: {identifier}")
+        print(f"User found in DB: {user is not None}")
+        if user:
+            print(f"User's actual username: {user.username}")
+            hash_check_result = check_password_hash(user.password, password)
+            print(f"Password hash check result: {hash_check_result}")
+        print(f"-------------------")
+
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('main.chat'))
+
         flash('Invalid username or password')
+
     return render_template('login.html')
 
 
@@ -184,7 +197,7 @@ def delete_account():
                            sender=current_app.config['MAIL_USERNAME'], recipients=[email])
         msg.body = (
             f"Dear {name},\n\n"
-            "This email is to confirm that your Hi-Meet-APP account has been permanently deleted as per your request. "  # Fix applied here
+            "This email is to confirm that your Hi-Meet-APP account has been permanently deleted as per your request. "
             "All your personal data and message history have been removed from our servers.\n\n"
             "We are sorry to see you go. If you ever wish to return, you are always welcome to create a new account.\n\n"
             "Best regards,\nThe Hi-Meet-APP Team"
