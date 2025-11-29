@@ -178,7 +178,6 @@ def delete_account():
     name = user.name
 
     try:
-        # Goodbye Email
         msg = EmailMessage("Account Deletion Confirmation",
                            sender=current_app.config['MAIL_USERNAME'], recipients=[email])
         msg.body = (

@@ -15,16 +15,22 @@ mail = Mail()
 
 
 def create_app():
+    basedir = os.path.abspath(os.path.dirname(__file__))
+
+    DB_FILE_PATH = os.path.join(basedir, '..', 'local_dev.db')
+
     app = Flask(__name__, template_folder='../templates',
                 static_folder='../static')
 
     app.config['SECRET_KEY'] = os.environ.get(
         'SECRET_KEY', 'default_fallback_key_dont_use_in_prod')
+
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'DATABASE_URL', 'sqlite:///instance/chat.db')
+        'DATABASE_URL', f'sqlite:///{DB_FILE_PATH}')
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    UPLOAD_FOLDER = os.path.join(app.root_path, '../static/uploads')
+    UPLOAD_FOLDER = os.path.join(basedir, '..', 'static/uploads')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
     if not os.path.exists(UPLOAD_FOLDER):
@@ -55,4 +61,5 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
     return app

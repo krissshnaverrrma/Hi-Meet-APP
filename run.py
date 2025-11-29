@@ -3,9 +3,13 @@ try:
     monkey_patch()
 except ImportError:
     pass
+except RuntimeError:
+    pass
+
 from app import create_app, socketio
 
 app = create_app()
+
 
 socketio_app = app
 
