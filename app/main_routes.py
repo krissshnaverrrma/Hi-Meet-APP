@@ -41,7 +41,9 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(
+            (User.username == identifier) | (User.email == identifier)
+        ).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('main.chat'))

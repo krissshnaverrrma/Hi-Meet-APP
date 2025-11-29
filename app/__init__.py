@@ -17,7 +17,7 @@ mail = Mail()
 def create_app():
     basedir = os.path.abspath(os.path.dirname(__file__))
 
-    DB_FILE_PATH = os.path.join(basedir, '..', 'local_dev.db')
+    DB_FILE_PATH = os.path.join(basedir, '..', 'chat.db')
 
     app = Flask(__name__, template_folder='../templates',
                 static_folder='../static')
